@@ -1,36 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'ShyEyes Admin Panel')</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@yield("title", "ShyEyes Admin Panel")</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="{{ asset("css/style.css") }}">
+	<!-- jQuery (pehle load hoga) -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-    @stack('styles')
+	<!-- Toastr CSS -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+	<!-- Toastr JS (jQuery ke baad hi load hoga) -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+	@stack("styles")
 </head>
+
 <body>
-    <div class="admin-wrapper">
-        <!-- Sidebar -->
-        @include('layout.sidebar')
+	<div class="admin-wrapper">
+		<!-- Sidebar -->
+		@include("layout.sidebar")
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Top Navigation -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-                <div class="container-fluid">
-                    <button class="btn btn-primary d-md-none" id="sidebarToggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
+		<!-- Main Content -->
+		<div class="main-content">
+			<!-- Top Navigation -->
+			<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+				<div class="container-fluid">
+					<button class="btn btn-primary d-md-none" id="sidebarToggle">
+						<i class="fas fa-bars"></i>
+					</button>
 
-                    {{-- <div class="ms-auto d-flex align-items-center">
+					{{-- <div class="ms-auto d-flex align-items-center">
                         <div class="dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user-circle me-1"></i>
@@ -55,21 +65,23 @@
                             </ul>
                         </div>
                     </div> --}}
-                </div>
-            </nav>
+				</div>
+			</nav>
 
-            <!-- Page Content -->
-            <main class="content-wrapper">
-                @yield('content')
-            </main>
-        </div>
-    </div>
+			<!-- Page Content -->
+			<main class="container-fluid py-4">
+				@yield("content")
+			</main>
+		</div>
+	</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-
-    @stack('scripts')
+	@stack("scripts")
 </body>
+
 </html>

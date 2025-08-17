@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 
 /*
@@ -23,4 +25,5 @@ Route::post('/register/step1', [AuthController::class, 'step1']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/register/step2', [AuthController::class, 'step2']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/report', [ReportController::class, 'store'])->name('report.store');
 });

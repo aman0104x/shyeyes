@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Controller\Admin\ReportController;
 use App\Http\Controllers\Controller\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Controller\Admin\DashboardController;
 use App\Http\Controllers\Controller\Admin\UserController;
 use Illuminate\Support\Facades\Route;
+
 
 
 /*
@@ -33,6 +35,10 @@ Route::prefix('admin')->group(function () {
         Route::post('/profile/update', [AdminAuthController::class, 'updateProfile'])->name('admin.profile.update');
         Route::post('/change-password', [AdminAuthController::class, 'changePassword'])->name('admin.password.change');
         Route::get('/settings', [AdminAuthController::class, 'settings'])->name('admin.settings');
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
+        Route::delete('/reports/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
+        Route::get('/reports/{report}/details', [ReportController::class, 'getReportDetails'])->name('reports.details');
 
         // User Management Routes
         Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');

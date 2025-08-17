@@ -11,7 +11,7 @@
 			border-radius: 12px;
 			box-shadow: 0 0 40px rgba(53, 31, 31, 0.05);
 			height: 100%;
-			max-width: 1200px;
+			/* max-width: 1200px; */
 			margin: 0 auto;
 			font-family: 'Segoe UI', sans-serif;
 		}
@@ -78,45 +78,61 @@
 
 		/* Ensure action buttons stay within cell */
 		.user-table-um td:last-child {
-			min-width: 280px;
+			min-width: auto;
+			max-width: 300px;
 			white-space: normal;
 			text-align: center;
 			vertical-align: middle;
+			overflow: visible;
 		}
 
 		/* Proper button alignment */
 		.btn-um {
-			padding: 6px 12px;
+			padding: 6px 10px;
 			border: none;
 			border-radius: 6px;
 			color: #fff;
 			margin: 2px;
 			cursor: pointer;
-			min-width: 70px;
+			min-width: 65px;
 			white-space: nowrap;
-			font-size: 14px;
+			font-size: 13px;
 			display: inline-block;
 			vertical-align: middle;
+			flex-shrink: 0;
 		}
 
-		/* Button container for single line alignment */
+		/* Button container for responsive alignment */
 		.action-buttons {
 			display: flex;
-			flex-wrap: nowrap;
-			gap: 4px;
-			justify-content: flex-start;
+			flex-wrap: wrap;
+			gap: 3px;
+			justify-content: center;
 			align-items: center;
-			white-space: nowrap;
+			white-space: normal;
+			max-width: 100%;
+			overflow: visible;
 		}
 
-		/* Responsive button layout - single line */
+		/* Responsive button layout - improved for zoom */
 		@media (max-width: 1200px) {
 			.email-cell {
 				max-width: 150px;
 			}
 
 			.user-table-um td:last-child {
-				min-width: 300px;
+				min-width: auto;
+				max-width: 280px;
+			}
+
+			.action-buttons {
+				gap: 2px;
+			}
+
+			.btn-um {
+				padding: 5px 8px;
+				font-size: 12px;
+				min-width: 60px;
 			}
 		}
 
@@ -127,13 +143,21 @@
 			}
 
 			.user-table-um td:last-child {
-				min-width: 280px;
+				min-width: auto;
+				max-width: 250px;
+			}
+
+			.action-buttons {
+				flex-direction: row;
+				flex-wrap: wrap;
+				gap: 2px;
 			}
 
 			.btn-um {
-				padding: 5px 10px;
-				font-size: 13px;
-				min-width: 65px;
+				padding: 4px 6px;
+				font-size: 11px;
+				min-width: 55px;
+				margin: 1px;
 			}
 		}
 
@@ -144,27 +168,61 @@
 			}
 
 			.user-table-um td:last-child {
-				min-width: 260px;
-				white-space: nowrap;
+				min-width: auto;
+				max-width: 200px;
+			}
+
+			.action-buttons {
+				flex-direction: column;
+				align-items: stretch;
+				gap: 2px;
 			}
 
 			.btn-um {
 				font-size: 11px;
 				padding: 4px 6px;
-				min-width: 60px;
-				margin: 1px;
+				min-width: auto;
+				width: 100%;
+				margin: 1px 0;
 			}
 		}
 
 		@media (max-width: 576px) {
 			.user-table-um td:last-child {
-				min-width: 240px;
+				min-width: auto;
+				max-width: 180px;
+			}
+
+			.action-buttons {
+				flex-direction: column;
+				gap: 1px;
 			}
 
 			.btn-um {
 				font-size: 10px;
-				padding: 3px 5px;
-				min-width: 55px;
+				padding: 3px 4px;
+				min-width: auto;
+				width: 100%;
+			}
+		}
+
+		/* High zoom level fixes */
+		@media (max-width: 480px) {
+			.user-table-um td:last-child {
+				min-width: auto;
+				max-width: 150px;
+			}
+
+			.action-buttons {
+				flex-direction: column;
+				gap: 1px;
+			}
+
+			.btn-um {
+				font-size: 9px;
+				padding: 2px 3px;
+				min-width: auto;
+				width: 100%;
 			}
 		}
 
@@ -497,7 +555,8 @@
 									<button class="btn-um unblock" data-id="{{ $user->id }}">Unblock</button>
 								@endif
 
-								<button type="button" class="btn-um delete" onclick="deleteUser({{ $user->id }}, '{{ $user->f_name }} {{ $user->l_name }}')">Delete</button>
+								<button type="button" class="btn-um delete"
+									onclick="deleteUser({{ $user->id }}, '{{ $user->f_name }} {{ $user->l_name }}')">Delete</button>
 							</div>
 						</td>
 					</tr>
@@ -692,42 +751,42 @@
 
 				// Use POST with _method parameter for Laravel compatibility
 				fetch(`/admin/users/${userId}`, {
-					method: 'POST',
-					headers: {
-						'X-CSRF-TOKEN': csrfToken,
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						_method: 'DELETE'
+						method: 'POST',
+						headers: {
+							'X-CSRF-TOKEN': csrfToken,
+							'Accept': 'application/json',
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							_method: 'DELETE'
+						})
 					})
-				})
-				.then(response => {
-					console.log('Response status:', response.status);
-					return response.text().then(text => {
-						try {
-							const data = JSON.parse(text);
-							if (data.success) {
-								showToast('success', 'User Deleted', 'User deleted successfully!');
-								// Remove the row from the table
-								const row = document.querySelector(`tr[data-id="${userId}"]`);
-								if (row) {
-									row.remove();
+					.then(response => {
+						console.log('Response status:', response.status);
+						return response.text().then(text => {
+							try {
+								const data = JSON.parse(text);
+								if (data.success) {
+									showToast('success', 'User Deleted', 'User deleted successfully!');
+									// Remove the row from the table
+									const row = document.querySelector(`tr[data-id="${userId}"]`);
+									if (row) {
+										row.remove();
+									}
+								} else {
+									throw new Error(data.message || 'Delete failed');
 								}
-							} else {
-								throw new Error(data.message || 'Delete failed');
+							} catch (e) {
+								// If response is not JSON, show the raw text
+								console.error('Non-JSON response:', text);
+								throw new Error('Server error: ' + text.substring(0, 100) + '...');
 							}
-						} catch (e) {
-							// If response is not JSON, show the raw text
-							console.error('Non-JSON response:', text);
-							throw new Error('Server error: ' + text.substring(0, 100) + '...');
-						}
+						});
+					})
+					.catch(error => {
+						console.error('Delete error:', error);
+						showToast('error', 'Error', error.message || 'Error deleting user. Please try again.');
 					});
-				})
-				.catch(error => {
-					console.error('Delete error:', error);
-					showToast('error', 'Error', error.message || 'Error deleting user. Please try again.');
-				});
 			}
 		}
 
@@ -842,7 +901,7 @@
 						editImagePreview.src = profileImg.src;
 						editImagePreview.style.display = 'block';
 					} else {
-					editImagePreview.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(
+						editImagePreview.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(
 							nameCell.textContent) + '&size=100&background=ff4081&color=fff';
 					}
 
@@ -884,9 +943,12 @@
 									target.classList.toggle('block');
 									target.classList.toggle('unblock');
 
-									showToast('success', 'Status Updated', `User ${newStatus === 'block' ? 'blocked' : 'unblocked'} successfully!`);
+									showToast('success', 'Status Updated',
+										`User ${newStatus === 'block' ? 'blocked' : 'unblocked'} successfully!`
+										);
 								} else {
-									showToast('error', 'Update Failed', data.message || 'Failed to update status.');
+									showToast('error', 'Update Failed', data.message ||
+										'Failed to update status.');
 								}
 							})
 							.catch(err => {
@@ -925,52 +987,52 @@
 						return response.json();
 					})
 					.then(data => {
-							if (data.success) {
-								// Update UI with new data
-								const statusSpan = currentEditRow.querySelector('.status-um');
-								// Status handling removed as the status field is no longer present
+						if (data.success) {
+							// Update UI with new data
+							const statusSpan = currentEditRow.querySelector('.status-um');
+							// Status handling removed as the status field is no longer present
 
-								// Update name, email, gender, location
-								currentEditRow.querySelector('.name-cell').textContent =
-									`${editFName.value.trim()} ${editLName.value.trim()}`;
-								currentEditRow.querySelector('.email-cell').textContent = editEmail.value
-									.trim();
-								currentEditRow.querySelector('.gender-cell').textContent = editGender.value
-									.charAt(0).toUpperCase() + editGender.value.slice(1);
-								currentEditRow.querySelector('.location-cell').textContent = editLocation.value
-									.trim();
+							// Update name, email, gender, location
+							currentEditRow.querySelector('.name-cell').textContent =
+								`${editFName.value.trim()} ${editLName.value.trim()}`;
+							currentEditRow.querySelector('.email-cell').textContent = editEmail.value
+								.trim();
+							currentEditRow.querySelector('.gender-cell').textContent = editGender.value
+								.charAt(0).toUpperCase() + editGender.value.slice(1);
+							currentEditRow.querySelector('.location-cell').textContent = editLocation.value
+								.trim();
 
-								// Update data attributes for view modal
-								currentEditRow.dataset.phone = editPhone.value;
-								currentEditRow.dataset.dob = editDob.value ? new Date(editDob.value)
-									.toLocaleDateString('en-GB') : 'N/A';
-								currentEditRow.dataset.age = editAge.value || 'N/A';
-								currentEditRow.dataset.about = editAbout.value || 'N/A';
+							// Update data attributes for view modal
+							currentEditRow.dataset.phone = editPhone.value;
+							currentEditRow.dataset.dob = editDob.value ? new Date(editDob.value)
+								.toLocaleDateString('en-GB') : 'N/A';
+							currentEditRow.dataset.age = editAge.value || 'N/A';
+							currentEditRow.dataset.about = editAbout.value || 'N/A';
 
-								// Update profile image if changed
-								if (data.user && data.user.img) {
-									const profileImg = currentEditRow.querySelector('.user-avatar-um');
-									if (profileImg) {
-										const imagePath = data.user.img.startsWith('uploads/') ?
-											`/${data.user.img}` :
-											`/uploads/users/${data.user.img}`;
-										profileImg.src = imagePath;
-									}
+							// Update profile image if changed
+							if (data.user && data.user.img) {
+								const profileImg = currentEditRow.querySelector('.user-avatar-um');
+								if (profileImg) {
+									const imagePath = data.user.img.startsWith('uploads/') ?
+										`/${data.user.img}` :
+										`/uploads/users/${data.user.img}`;
+									profileImg.src = imagePath;
 								}
-
-								editModal.style.display = 'none';
-								currentEditRow = null;
-
-								// Show success message
-								showToast('success', 'User Updated', 'User updated successfully!');
-							} else {
-								showToast('error', 'Update Failed', data.message || 'Failed to update user.');
 							}
-						})
-						.catch(err => {
-							console.error('Error:', err);
-							showToast('error', 'Error', 'Error updating user. Please try again.');
-						});
+
+							editModal.style.display = 'none';
+							currentEditRow = null;
+
+							// Show success message
+							showToast('success', 'User Updated', 'User updated successfully!');
+						} else {
+							showToast('error', 'Update Failed', data.message || 'Failed to update user.');
+						}
+					})
+					.catch(err => {
+						console.error('Error:', err);
+						showToast('error', 'Error', 'Error updating user. Please try again.');
+					});
 			});
 
 

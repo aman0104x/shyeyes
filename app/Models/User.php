@@ -41,7 +41,12 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    protected $appends = ['full_name'];
 
+    public function getFullNameAttribute()
+    {
+        return trim("{$this->f_name} {$this->l_name}");
+    }
 
     /**
      * The attributes that should be cast.
