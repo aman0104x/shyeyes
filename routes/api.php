@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,4 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/register/step2', [AuthController::class, 'step2']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/report', [ReportController::class, 'store'])->name('report.store');
+    Route::get('/messages/{userId}', [MessageController::class, 'getMessages']);
+    Route::post('/messages', [MessageController::class, 'sendMessage']);
+    Route::get('/profile', [ProfileController::class, 'getProfile']);
 });
