@@ -51,6 +51,33 @@ class ProfileController extends Controller
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at
             ]
-        ]);
+        ], 200);
+    }
+
+    /**
+     * Get all unblocked users with basic profile information
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUnblockedUsers(Request $request)
+    {
+        $users = \App\Models\User::where('status', '!=', 'blocked')
+            ->orWhereNull('status')
+            ->select(['id', 'f_name', 'l_name', 'img'])
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->full_name,
+                    'image' => $user->img ? url($user->img) : null
+                ];
+            });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Users retrieved successfully',
+            'data' => $users
+        ], 200);
     }
 }

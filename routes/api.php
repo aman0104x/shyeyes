@@ -31,4 +31,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/messages/{userId}', [MessageController::class, 'getMessages']);
     Route::post('/messages', [MessageController::class, 'sendMessage']);
     Route::get('/profile', [ProfileController::class, 'getProfile']);
+    Route::get('/active-users', [ProfileController::class, 'getUnblockedUsers']);
 });
