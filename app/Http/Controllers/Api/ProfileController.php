@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -62,7 +63,7 @@ class ProfileController extends Controller
      */
     public function getUnblockedUsers(Request $request)
     {
-        $users = \App\Models\User::where('status', '!=', 'blocked')
+        $users = User::where('status', '!=', 'blocked')
             ->orWhereNull('status')
             ->select(['id', 'f_name', 'l_name', 'img'])
             ->get()
@@ -78,6 +79,64 @@ class ProfileController extends Controller
             'status' => true,
             'message' => 'Users retrieved successfully',
             'data' => $users
+        ], 200);
+    }
+
+    /**
+     * Get user details by ID
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUserById(Request $request, $id)
+    {
+        // Find the user by ID
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        // Check if the user is blocked (except for the authenticated user viewing their own profile)
+        $authenticatedUser = $request->user();
+        if ($user->status === 'blocked' && $authenticatedUser->id != $user->id) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        // Build full image URL if image exists
+        $imageUrl = null;
+        if ($user->img) {
+            $imageUrl = url($user->img);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User details retrieved successfully',
+            'data' => [
+                'id' => $user->id,
+                'unique_id' => $user->unique_id,
+                'f_name' => $user->f_name,
+                'l_name' => $user->l_name,
+                'full_name' => $user->full_name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'dob' => $user->dob,
+                'age' => $user->age,
+                'gender' => $user->gender,
+                'location' => $user->location,
+                'about' => $user->about,
+                'status' => $user->status,
+                'image_url' => $imageUrl,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+            ]
         ], 200);
     }
 }

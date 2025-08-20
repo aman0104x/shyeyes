@@ -681,6 +681,23 @@
 						style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;">
 				</div>
 
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+					<div>
+						<label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333; font-size: 13px;">New
+							Password</label>
+						<input type="password" id="editPassword" name="password"
+							style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;"
+							placeholder="Leave blank to keep current password">
+					</div>
+					<div>
+						<label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333; font-size: 13px;">Confirm
+							Password</label>
+						<input type="password" id="editPasswordConfirmation" name="password_confirmation"
+							style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; transition: border-color 0.3s;"
+							placeholder="Confirm new password">
+					</div>
+				</div>
+
 				<div style="margin-top: 15px;">
 					<label style="display: block; margin-bottom: 5px; font-weight: 600; color: #333; font-size: 13px;">About</label>
 					<textarea id="editAbout" name="about" rows="3"
@@ -705,7 +722,7 @@
 		</div>
 	</div>
 
-	<script>
+	{{-- <script>
 		// Toast Notification Functions
 		function showToast(type, title, message, duration = 3000) {
 			const container = document.getElementById('toastContainer');
@@ -945,7 +962,7 @@
 
 									showToast('success', 'Status Updated',
 										`User ${newStatus === 'block' ? 'blocked' : 'unblocked'} successfully!`
-										);
+									);
 								} else {
 									showToast('error', 'Update Failed', data.message ||
 										'Failed to update status.');
@@ -1035,6 +1052,338 @@
 					});
 			});
 
+
+			// Cancel edit
+			editModal.querySelector('.btn-cancel').addEventListener('click', () => {
+				editModal.style.display = 'none';
+				currentEditRow = null;
+			});
+
+			// Close modals when clicking outside
+			window.addEventListener('click', e => {
+				if (e.target === editModal) {
+					editModal.style.display = 'none';
+					currentEditRow = null;
+				}
+				if (e.target === viewModal) {
+					viewModal.style.display = 'none';
+				}
+			});
+		});
+	</script> --}}
+	<script>
+	// Laravel routes with placeholders
+	const routes = {
+		deleteUser: "{{ route("admin.users.destroy", ":id") }}",
+		updateUser: "{{ route("admin.users.update", ":id") }}",
+		updateStatus: "{{ route("admin.users.status.update", ":id") }}"
+	};
+
+		// Toast Notification Functions
+		function showToast(type, title, message, duration = 3000) {
+			const container = document.getElementById('toastContainer');
+			const toast = document.createElement('div');
+			toast.className = `toast toast-${type}`;
+
+			const icons = {
+				success: '✅',
+				error: '❌',
+				warning: '⚠️'
+			};
+
+			toast.innerHTML = `
+            <div class="toast-header">
+                <span class="toast-title">${icons[type]} ${title}</span>
+                <button class="toast-close" onclick="closeToast(this.parentElement.parentElement)">&times;</button>
+            </div>
+            <div class="toast-body">${message}</div>
+        `;
+
+			container.appendChild(toast);
+
+			// Trigger animation
+			setTimeout(() => toast.classList.add('show'), 100);
+
+			// Auto close after duration
+			setTimeout(() => closeToast(toast), duration);
+		}
+
+		function closeToast(toast) {
+			toast.classList.remove('show');
+			setTimeout(() => {
+				if (toast.parentElement) {
+					toast.parentElement.removeChild(toast);
+				}
+			}, 300);
+		}
+
+		// Delete User Function with AJAX
+		function deleteUser(userId, userName) {
+			if (confirm(`Are you sure you want to delete ${userName}?`)) {
+				const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+				fetch(routes.deleteUser.replace(':id', userId), {
+						method: 'POST',
+						headers: {
+							'X-CSRF-TOKEN': csrfToken,
+							'Accept': 'application/json',
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							_method: 'DELETE'
+						})
+					})
+					.then(response => response.text().then(text => {
+						try {
+							const data = JSON.parse(text);
+							if (data.success) {
+								showToast('success', 'User Deleted', 'User deleted successfully!');
+								const row = document.querySelector(`tr[data-id="${userId}"]`);
+								if (row) row.remove();
+							} else {
+								throw new Error(data.message || 'Delete failed');
+							}
+						} catch (e) {
+							console.error('Non-JSON response:', text);
+							throw new Error('Server error: ' + text.substring(0, 100) + '...');
+						}
+					}))
+					.catch(error => {
+						console.error('Delete error:', error);
+						showToast('error', 'Error', error.message || 'Error deleting user. Please try again.');
+					});
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+			const statusFilter = document.getElementById('statusFilter');
+			const tbody = document.querySelector('#userTable tbody');
+			const searchInput = document.getElementById('searchInput');
+
+			function filterRows() {
+				const filterValue = statusFilter.value.toLowerCase();
+				const searchText = searchInput.value.toLowerCase();
+				for (let row of tbody.rows) {
+					const statusSpan = row.querySelector('.status-um');
+					const nameCell = row.querySelector('.name-cell');
+					let matchesStatus = filterValue === 'all' || statusSpan.classList.contains(filterValue);
+					let matchesSearch = nameCell.textContent.toLowerCase().includes(searchText);
+					row.style.display = (matchesStatus && matchesSearch) ? '' : 'none';
+				}
+			}
+
+			statusFilter.addEventListener('change', filterRows);
+			searchInput.addEventListener('input', filterRows);
+
+			const viewModal = document.getElementById('viewModal');
+			const editModal = document.getElementById('editModal');
+			const editForm = document.getElementById('editForm');
+			const editFName = document.getElementById('editFName');
+			const editLName = document.getElementById('editLName');
+			const editEmail = document.getElementById('editEmail');
+			const editPhone = document.getElementById('editPhone');
+			const editDob = document.getElementById('editDob');
+			const editAge = document.getElementById('editAge');
+			const editGender = document.getElementById('editGender');
+			const editLocation = document.getElementById('editLocation');
+			const editAbout = document.getElementById('editAbout');
+			const editImagePreview = document.getElementById('editImagePreview');
+			let currentEditRow = null;
+
+			// View modal elements
+			const viewName = document.getElementById('viewName');
+			const viewEmail = document.getElementById('viewEmail');
+			const viewPhone = document.getElementById('viewPhone');
+			const viewGender = document.getElementById('viewGender');
+			const viewLocation = document.getElementById('viewLocation');
+			const viewStatus = document.getElementById('viewStatus');
+			const viewDob = document.getElementById('viewDob');
+			const viewAge = document.getElementById('viewAge');
+			const viewAbout = document.getElementById('viewAbout');
+
+			tbody.addEventListener('click', function(event) {
+				const target = event.target;
+				const row = target.closest('tr');
+				if (!row) return;
+
+				const nameCell = row.querySelector('.name-cell');
+				const emailCell = row.querySelector('.email-cell');
+				const genderCell = row.querySelector('.gender-cell');
+				const locationCell = row.querySelector('.location-cell');
+				const statusSpan = row.querySelector('.status-um');
+				const userId = row.dataset.id;
+
+				// View user
+				if (target.classList.contains('view')) {
+					const profileImg = row.querySelector('.user-avatar-um');
+					const imgSrc = profileImg ? profileImg.src : '';
+
+					viewName.textContent = nameCell.textContent;
+					viewEmail.textContent = emailCell.textContent;
+					viewPhone.textContent = row.dataset.phone || 'N/A';
+					viewGender.textContent = genderCell.textContent;
+					viewLocation.textContent = locationCell.textContent;
+					viewStatus.textContent = statusSpan.textContent;
+					viewDob.textContent = row.dataset.dob || 'N/A';
+					viewAge.textContent = row.dataset.age || 'N/A';
+					viewAbout.textContent = row.dataset.about || 'N/A';
+
+					const viewImage = document.getElementById('viewImage');
+					if (viewImage) {
+						viewImage.src = imgSrc || 'https://ui-avatars.com/api/?name=' +
+							encodeURIComponent(nameCell.textContent) +
+							'&size=80&background=ff4081&color=fff';
+					}
+					viewModal.style.display = 'flex';
+				}
+
+				// Edit user
+				else if (target.classList.contains('edit')) {
+					currentEditRow = row;
+
+					const fullName = nameCell.textContent.trim();
+					const nameParts = fullName.split(' ');
+					editFName.value = nameParts[0] || '';
+					editLName.value = nameParts.slice(1).join(' ') || '';
+					editEmail.value = emailCell.textContent;
+					editPhone.value = row.dataset.phone || '';
+
+					const dobText = row.dataset.dob || '';
+					if (dobText && dobText !== 'N/A') {
+						const [day, month, year] = dobText.split('/');
+						editDob.value = `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
+					} else {
+						editDob.value = '';
+					}
+
+					editAge.value = row.dataset.age || '';
+					editGender.value = genderCell.textContent.toLowerCase() || '';
+					editLocation.value = locationCell.textContent;
+					editAbout.value = row.dataset.about || '';
+
+					const profileImg = row.querySelector('.user-avatar-um');
+					if (profileImg && profileImg.src) {
+						editImagePreview.src = profileImg.src;
+						editImagePreview.style.display = 'block';
+					} else {
+						editImagePreview.src = 'https://ui-avatars.com/api/?name=' +
+							encodeURIComponent(nameCell.textContent) +
+							'&size=100&background=ff4081&color=fff';
+					}
+
+					editModal.style.display = 'flex';
+				}
+
+				// Block/Unblock user
+				else if (target.classList.contains('block') || target.classList.contains('unblock')) {
+					const newStatus = target.classList.contains('block') ? 'block' : 'unblock';
+					if (confirm(
+							`Are you sure you want to ${newStatus === 'block' ? 'Block' : 'Unblock'} this user?`
+							)) {
+						fetch(routes.updateStatus.replace(':id', userId), {
+								method: 'POST',
+								headers: {
+									'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+									'Accept': 'application/json',
+									'Content-Type': 'application/json'
+								},
+								body: JSON.stringify({
+									status: newStatus
+								})
+							})
+							.then(res => res.json())
+							.then(data => {
+								if (data.success) {
+									if (newStatus === 'block') {
+										statusSpan.textContent = 'Blocked';
+										statusSpan.style.backgroundColor = '#ff4d4f';
+									} else {
+										statusSpan.textContent = 'Unblocked';
+										statusSpan.style.backgroundColor = '#52c41a';
+									}
+									statusSpan.className = 'status-um ' + newStatus;
+
+									target.textContent = newStatus === 'block' ? 'Unblock' : 'Block';
+									target.classList.toggle('block');
+									target.classList.toggle('unblock');
+
+									showToast('success', 'Status Updated',
+										`User ${newStatus === 'block' ? 'blocked' : 'unblocked'} successfully!`
+									);
+								} else {
+									showToast('error', 'Update Failed', data.message ||
+										'Failed to update status.');
+								}
+							})
+							.catch(err => {
+								console.error(err);
+								showToast('error', 'Error', 'Error updating status. Please try again.');
+							});
+					}
+				}
+			});
+
+			// Edit form submit
+			editForm.addEventListener('submit', function(e) {
+				e.preventDefault();
+				if (!currentEditRow) return;
+
+				const formData = new FormData(editForm);
+				const userId = currentEditRow.dataset.id;
+
+				formData.append('_method', 'PUT');
+
+				fetch(routes.updateUser.replace(':id', userId), {
+						method: 'POST',
+						body: formData,
+						headers: {
+							'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+							'Accept': 'application/json',
+							'X-Requested-With': 'XMLHttpRequest'
+						}
+					})
+					.then(response => {
+						if (!response.ok) throw new Error('Network response was not ok');
+						return response.json();
+					})
+					.then(data => {
+						if (data.success) {
+							currentEditRow.querySelector('.name-cell').textContent =
+								`${editFName.value.trim()} ${editLName.value.trim()}`;
+							currentEditRow.querySelector('.email-cell').textContent = editEmail.value
+							.trim();
+							currentEditRow.querySelector('.gender-cell').textContent =
+								editGender.value.charAt(0).toUpperCase() + editGender.value.slice(1);
+							currentEditRow.querySelector('.location-cell').textContent = editLocation.value
+								.trim();
+
+							currentEditRow.dataset.phone = editPhone.value;
+							currentEditRow.dataset.dob = editDob.value ? new Date(editDob.value)
+								.toLocaleDateString('en-GB') : 'N/A';
+							currentEditRow.dataset.age = editAge.value || 'N/A';
+							currentEditRow.dataset.about = editAbout.value || 'N/A';
+
+							if (data.user && data.user.img) {
+								const profileImg = currentEditRow.querySelector('.user-avatar-um');
+								if (profileImg) {
+									const imagePath = data.user.img.startsWith('uploads/') ?
+										`/${data.user.img}` : `/uploads/users/${data.user.img}`;
+									profileImg.src = imagePath;
+								}
+							}
+
+							editModal.style.display = 'none';
+							currentEditRow = null;
+							showToast('success', 'User Updated', 'User updated successfully!');
+						} else {
+							showToast('error', 'Update Failed', data.message || 'Failed to update user.');
+						}
+					})
+					.catch(err => {
+						console.error('Error:', err);
+						showToast('error', 'Error', 'Error updating user. Please try again.');
+					});
+			});
 
 			// Cancel edit
 			editModal.querySelector('.btn-cancel').addEventListener('click', () => {

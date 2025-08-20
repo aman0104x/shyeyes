@@ -14,7 +14,6 @@ class AuthController extends Controller
     // login //
     public function login(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6'
@@ -27,7 +26,6 @@ class AuthController extends Controller
             ], 422);
         }
 
-
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
                 'status' => false,
@@ -37,6 +35,14 @@ class AuthController extends Controller
 
         $user = Auth::user();
 
+        // 🚫 Check if user is blocked
+        if ($user->status === 'blocked') {
+            Auth::logout();
+            return response()->json([
+                'status' => false,
+                'message' => 'Your account has been blocked. Please contact support.'
+            ], 403);
+        }
 
         $token = $user->createToken('API Token')->plainTextToken;
 
@@ -47,6 +53,7 @@ class AuthController extends Controller
             // 'user' => $user
         ]);
     }
+
 
     // STEP 1: Basic details
     public function step1(Request $request)

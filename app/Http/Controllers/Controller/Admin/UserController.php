@@ -65,6 +65,7 @@ class UserController extends Controller
             'gender' => 'required|string|max:20',
             'location' => 'nullable|string|max:255',
             'about' => 'nullable|string',
+            'password' => 'nullable|string|min:8|confirmed',
             // 'status' => 'required|in:block,unblock',
         ]);
 
@@ -74,6 +75,13 @@ class UserController extends Controller
             $imageName = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/users'), $imageName);
             $validated['img'] = 'uploads/users/' . $imageName;
+        }
+
+        // Handle password update
+        if ($request->filled('password')) {
+            $validated['password'] = bcrypt($request->password);
+        } else {
+            unset($validated['password']);
         }
 
         // Keep existing unique_id

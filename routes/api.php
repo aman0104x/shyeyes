@@ -7,8 +7,6 @@ use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,7 +21,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register/step1', [AuthController::class, 'step1']);
 
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/register/step2', [AuthController::class, 'step2']);
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -32,4 +29,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/messages', [MessageController::class, 'sendMessage']);
     Route::get('/profile', [ProfileController::class, 'getProfile']);
     Route::get('/active-users', [ProfileController::class, 'getUnblockedUsers']);
+    Route::get('/users/{id}', [ProfileController::class, 'getUserById']);
 });
