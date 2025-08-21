@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\MessageRequestController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -78,7 +81,25 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/report', [ReportController::class, 'store'])->name('report.store');
     Route::get('/messages/{userId}', [MessageController::class, 'getMessages']);
     Route::post('/messages', [MessageController::class, 'sendMessage']);
+
+    // Message Request Routes
+    Route::post('/message-requests', [MessageRequestController::class, 'sendRequest']);
+    Route::put('/message-requests/{id}/accept', [MessageRequestController::class, 'acceptRequest']);
+    Route::put('/message-requests/{id}/reject', [MessageRequestController::class, 'rejectRequest']);
+    Route::get('/message-requests/received', [MessageRequestController::class, 'getReceivedRequests']);
+    Route::get('/message-requests/sent', [MessageRequestController::class, 'getSentRequests']);
+    Route::get('/message-requests/can-message/{userId}', [MessageRequestController::class, 'canMessage']);
+    Route::get('/message-requests/accepted', [MessageRequestController::class, 'getAcceptedUsers']);
+
     Route::get('/profile', [ProfileController::class, 'getProfile']);
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile']);
     Route::get('/active-users', [ProfileController::class, 'getUnblockedUsers']);
     Route::get('/users/{id}', [ProfileController::class, 'getUserById']);
+    Route::get('/best-matches', [ProfileController::class, 'getOppositeGenderUsers']);
+
+    // Like Routes
+    Route::post('/users/{userId}/like', [LikeController::class, 'likeUser']);
+    Route::get('/users/{userId}/liked-by', [LikeController::class, 'getLikedBy']);
+    Route::get('/users/{userId}/likes', [LikeController::class, 'getLikes']);
+    Route::delete('/users/{userId}/unlike', [LikeController::class, 'unlikeUser']);
 });
