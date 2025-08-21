@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller\Admin\ReportController;
 use App\Http\Controllers\Controller\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Controller\Admin\DashboardController;
 use App\Http\Controllers\Controller\Admin\UserController;
+use App\Http\Controllers\DownloadController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -51,3 +52,5 @@ Route::prefix('admin')->group(function () {
         Route::post('/users/{user}/status', [UserController::class, 'updateStatus'])->name('admin.users.status.update');
     });
 });
+
+
