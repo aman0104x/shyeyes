@@ -249,9 +249,128 @@
 			color: #ef4444;
 		}
 
+		/* Mobile Cards Layout */
+		.reports-cards {
+			display: none;
+		}
+
+		.report-card {
+			background: white;
+			border-radius: 0.75rem;
+			padding: 1.25rem;
+			margin-bottom: 1rem;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+			border-left: 4px solid #ef4444;
+		}
+
+		.report-card-header {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			margin-bottom: 1rem;
+		}
+
+		.report-card-user {
+			width: 3rem;
+			height: 3rem;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 2px solid #e2e8f0;
+			flex-shrink: 0;
+		}
+
+		.report-card-info {
+			flex: 1;
+		}
+
+		.report-card-name {
+			font-weight: 600;
+			font-size: 0.95rem;
+			color: #1e293b;
+			margin-bottom: 0.25rem;
+			line-height: 1.3;
+		}
+
+		.report-card-reason {
+			font-size: 0.8125rem;
+			color: #475569;
+			background: #f1f5f9;
+			padding: 0.375rem 0.625rem;
+			border-radius: 0.375rem;
+			display: inline-block;
+			margin-bottom: 0.5rem;
+		}
+
+		.report-card-time {
+			font-size: 0.75rem;
+			color: #94a3b8;
+		}
+
+		.report-card-actions {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 0.5rem;
+			margin-top: 1rem;
+		}
+
+		.report-card-btn {
+			padding: 0.625rem;
+			border: none;
+			border-radius: 0.5rem;
+			color: white;
+			cursor: pointer;
+			font-size: 0.8125rem;
+			font-weight: 500;
+			transition: all 0.2s;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.375rem;
+			min-height: 44px;
+		}
+
+		.report-card-btn:hover {
+			transform: translateY(-1px);
+		}
+
+		.report-card-btn:active {
+			transform: translateY(0);
+		}
+
+		.report-card-view {
+			background: #3b82f6;
+		}
+
+		.report-card-block {
+			background: #f59e0b;
+		}
+
+		.report-card-delete {
+			background: #ef4444;
+		}
+
 		@media (max-width: 768px) {
 			.reports-wrapper {
 				padding: 1rem;
+			}
+
+			.filters-ur {
+				flex-direction: column;
+				gap: 0.75rem;
+			}
+
+			.search-box-ur,
+			.date-filter-ur {
+				max-width: 100%;
+				min-height: 44px;
+			}
+
+			.report-container-ur {
+				display: none;
+			}
+
+			.reports-cards {
+				display: block;
 			}
 
 			.report-ur {
@@ -274,6 +393,105 @@
 				margin-left: auto;
 				margin-right: 0;
 			}
+
+			.modal-content {
+				width: 95% !important;
+				margin: 2% auto !important;
+				padding: 1.25rem;
+			}
+
+			.modal-dialog {
+				margin: 0 auto;
+				max-width: 95%;
+			}
+		}
+
+		@media (max-width: 576px) {
+			.reports-wrapper {
+				padding: 0.75rem;
+			}
+
+			.reports-title {
+				font-size: 1.5rem;
+				margin-bottom: 1rem;
+			}
+
+			.report-card {
+				padding: 1rem;
+			}
+
+			.report-card-header {
+				flex-direction: column;
+				align-items: flex-start;
+				gap: 0.5rem;
+			}
+
+			.report-card-actions {
+				grid-template-columns: 1fr;
+				gap: 0.375rem;
+			}
+
+			.report-card-btn {
+				width: 100%;
+				justify-content: flex-start;
+				padding: 0.75rem 1rem;
+			}
+
+			.modal-content {
+				width: 98% !important;
+				margin: 1% auto !important;
+				padding: 1rem;
+			}
+
+			.report-details-content .user-section {
+				flex-direction: column;
+				text-align: center;
+				gap: 0.75rem;
+			}
+
+			.report-details-content .row {
+				flex-direction: column;
+				gap: 1rem;
+			}
+		}
+
+		@media (max-width: 400px) {
+			.report-card {
+				padding: 0.875rem;
+			}
+
+			.report-card-name {
+				font-size: 0.875rem;
+			}
+
+			.report-card-reason {
+				font-size: 0.75rem;
+				padding: 0.25rem 0.5rem;
+			}
+
+			.modal-content {
+				width: 100% !important;
+				margin: 0.5% auto !important;
+				padding: 0.875rem;
+				border-radius: 0.5rem;
+			}
+		}
+
+		/* Touch-friendly improvements */
+		.actions-ur button {
+			min-height: 44px;
+			min-width: 60px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.btn-close {
+			width: 44px;
+			height: 44px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 		}
 
 		.report-details-content {
@@ -425,6 +643,80 @@
 			@endforelse
 		</div>
 
+		<!-- Mobile Cards Layout -->
+		<div class="reports-cards">
+			@forelse($reports as $report)
+				<div class="report-card" data-report-id="{{ $report->id }}">
+					<div class="report-card-header">
+						@php
+							$reported = $report->reported;
+							$reportedImg = $reported->img ?? "";
+							$fullName = trim(($reported->f_name ?? "") . " " . ($reported->l_name ?? ""));
+							$imagePath = Str::startsWith($reportedImg, "uploads/")
+							    ? asset($reportedImg)
+							    : (!empty($reportedImg)
+							        ? asset("uploads/users/" . $reportedImg)
+							        : null);
+						@endphp
+
+						<img
+							src="{{ !empty($reportedImg) ? $imagePath : "https://ui-avatars.com/api/?name=" . urlencode($fullName) . "&size=60&background=ff4081&color=fff" }}"
+							class="report-card-user" alt="{{ $fullName }}">
+
+						<div class="report-card-info">
+							<div class="report-card-name">
+								Reported: {{ $report->reported->full_name }}
+							</div>
+							<div class="report-card-reason">{{ $report->reason }}</div>
+							<div class="report-card-time">{{ $report->created_at->format('M d, Y \a\t h:i A') }}</div>
+						</div>
+					</div>
+
+					<div class="report-card-actions">
+						<button class="report-card-btn report-card-view" data-bs-toggle="modal" data-bs-target="#reportModal"
+							onclick="viewReport({{ $report->id }})">
+							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="currentColor"
+								stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+								<circle cx="12" cy="12" r="3"></circle>
+							</svg>
+							View
+						</button>
+
+						<button class="report-card-btn report-card-block" onclick="blockUser({{ $report->reported_id }})">
+							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+								stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<circle cx="12" cy="12" r="10"></circle>
+								<line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+							</svg>
+							Block
+						</button>
+						<button class="report-card-btn report-card-delete" onclick="deleteReport({{ $report->id }})">
+							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+								stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<polyline points="3 6 5 6 21 6"></polyline>
+								<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+								<line x1="10" y1="11" x2="10" y2="17"></line>
+								<line x1="14" y1="11" x2="14" y2="17"></line>
+							</svg>
+							Delete
+						</button>
+					</div>
+				</div>
+			@empty
+				<div class="no-reports">
+					<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+						stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="12" cy="12" r="10"></circle>
+						<line x1="12" y1="8" x2="12" y2="12"></line>
+						<line x1="12" y1="16" x2="12.01" y2="16"></line>
+					</svg>
+					<h3>No Reports Found</h3>
+					<p>There are currently no user reports to display.</p>
+				</div>
+			@endforelse
+		</div>
+
 		@if ($reports->count())
 			<div class="pagination mt-6">
 				{{ $reports->links() }}
@@ -460,19 +752,22 @@
 	@push("scripts")
 		<script>
 			$(document).ready(function() {
-				// Search functionality
-				$('#searchReports').on('keyup', function() {
-					let value = $(this).val().toLowerCase();
-					$('.report-ur').filter(function() {
-						$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-					});
+			// Search functionality
+			$('#searchReports').on('keyup', function() {
+				let value = $(this).val().toLowerCase();
+				$('.report-ur').filter(function() {
+					$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
 				});
+				$('.report-card').filter(function() {
+					$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+				});
+			});
 
-				// Date filter functionality
-				$('#dateFilter').on('change', function() {
-					let filter = $(this).val();
-					filterReportsByDate(filter);
-				});
+			// Date filter functionality
+			$('#dateFilter').on('change', function() {
+				let filter = $(this).val();
+				filterReportsByDate(filter);
+			});
 			});
 
 			function viewReport(reportId) {
@@ -614,11 +909,39 @@
 
 			function filterReportsByDate(filter) {
 				const reports = $('.report-ur');
+				const reportCards = $('.report-card');
 				const today = new Date();
 				today.setHours(0, 0, 0, 0);
 
+				// Filter desktop reports
 				reports.each(function() {
 					const timestampText = $(this).find('.timestamp-ur').text();
+					const reportDate = new Date(timestampText.replace(' at ', ' '));
+					let show = true;
+
+					switch (filter) {
+						case 'today':
+							show = reportDate >= today;
+							break;
+						case 'this-week':
+							const weekStart = new Date(today);
+							weekStart.setDate(today.getDate() - today.getDay());
+							show = reportDate >= weekStart;
+							break;
+						case 'this-month':
+							const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+							show = reportDate >= monthStart;
+							break;
+						default:
+							show = true;
+					}
+
+					$(this).toggle(show);
+				});
+
+				// Filter mobile report cards
+				reportCards.each(function() {
+					const timestampText = $(this).find('.report-card-time').text();
 					const reportDate = new Date(timestampText.replace(' at ', ' '));
 					let show = true;
 

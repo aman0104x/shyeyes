@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Mobile header with toggle button */
+        .mobile-header {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #4e73df;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            height: 70px;
+        }
+
+        .mobile-header .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .mobile-header .logo img {
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Admin Sidebar */
+        .admin-sidebar {
+            width: 250px;
+            background: #4e73df;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dating-sidebar-container {
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            height: 100%;
+        }
+
+        .dating-sidebar-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .dating-sidebar-logo {
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            height: 70px;
+        }
+
+        .dating-sidebar-logo img {
+            max-width: 150px;
+            height: auto;
+        }
+
+        .dating-sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .dating-sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .dating-sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .dating-sidebar-menu a:hover,
+        .dating-sidebar-menu a.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid white;
+        }
+
+        .dating-sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+            padding-top: 30px;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Overlay for mobile when sidebar is open */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+            }
+
+            .admin-sidebar.sidebar-open {
+                transform: translateX(0);
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 20px;
+                padding-top: 70px;
+            }
+
+            .dating-sidebar-logo img {
+                max-width: 120px;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7f9;
+        }
+
+        .test-content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile header -->
+    <div class="mobile-header">
+        <div class="logo">
+            <img src="https://via.placeholder.com/150x50/4e73df/ffffff?text=ShyLogo" alt="Logo">
+        </div>
+        <button class="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Admin Sidebar -->
+    <div class="admin-sidebar">
+        <div class="dating-sidebar-container">
+            <div class="dating-sidebar-logo">
+                <img src="https://via.placeholder.com/150x50/ffffff/4e73df?text=ShyLogo" alt="Logo">
+            </div>
+            <ul class="dating-sidebar-menu">
+                <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-users"></i> User Management</a></li>
+                <li><a href="#"><i class="fas fa-user-tie"></i> Agent Management</a></li>
+                <li><a href="#"><i class="fas fa-comments"></i> Chats Monitoring</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Reports</a></li>
+                <li><a href="#"><i class="fas fa-credit-card"></i> Payments</a></li>
+                <li><a href="#"><i class="fas fa-crown"></i> Membership Plans</a></li>
+                <li>
+                    <a href="#">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Overlay for mobile when sidebar is open -->
+    <div class="overlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <button class="btn btn-primary d-md-none" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <main class="container-fluid py-4">
+            <div class="test-content">
+                <h1>Sidebar Test Page</h1>
+                <p>This is a test page to verify the sidebar collapse functionality.</p>
+                <p>Try clicking both toggle buttons (mobile header button and navbar button) to test the sidebar.</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.querySelector('.admin-sidebar');
+            const sidebarToggle = document.querySelector('#sidebarToggle');
+            const mobileToggle = document.querySelector('.sidebar-toggle');
+            const overlay = document.querySelector('.overlay');
+
+            // Function to toggle sidebar
+            function toggleSidebar() {
+                sidebar.classList.toggle('sidebar-open');
+                overlay.classList.toggle('active');
+                updateToggleButtons();
+            }
+
+            // Toggle sidebar on desktop button click
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    toggleSidebar();
+                });
+            }
+
+            // Toggle sidebar on mobile button click
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', function() {
+                    toggleSidebar();
+                });
+            }
+
+            // Close sidebar when clicking on overlay
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('sidebar-open');
+                overlay.classList.remove('active');
+                updateToggleButtons();
+            });
+
+            // Close sidebar when clicking on a link (for mobile)
+            const sidebarLinks = document.querySelectorAll('.dating-sidebar-menu a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 992) {
+                        sidebar.classList.remove('sidebar-open');
+                        overlay.classList.remove('active');
+                        updateToggleButtons();
+                    }
+                });
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 992) {
+                    sidebar.classList.remove('sidebar-open');
+                    overlay.classList.remove('active');
+                    updateToggleButtons();
+                }
+            });
+
+            // Update toggle buttons icon
+            function updateToggleButtons() {
+                const isOpen = sidebar.classList.contains('sidebar-open');
+                if (sidebarToggle) {
+                    sidebarToggle.innerHTML = isOpen ?
+                        '<i class="fas fa-times"></i>' :
+                        '<i class="fas fa-bars"></i>';
+                }
+                if (mobileToggle) {
+                    mobileToggle.innerHTML = isOpen ?
+                        '<i class="fas fa-times"></i>' :
+                        '<i class="fas fa-bars"></i>';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,13 +1,13 @@
 <?php
 
-use App\Http\Controllers\Controller\Admin\ReportController;
 use App\Http\Controllers\Controller\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Controller\Admin\DashboardController;
+use App\Http\Controllers\Controller\Admin\MembershipPlanController;
+use App\Http\Controllers\Controller\Admin\ReportController;
 use App\Http\Controllers\Controller\Admin\UserController;
+use App\Http\Controllers\Controller\Admin\AgentController;
 use App\Http\Controllers\DownloadController;
 use Illuminate\Support\Facades\Route;
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +50,24 @@ Route::prefix('admin')->group(function () {
         Route::put('/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
         Route::post('/users/{user}/status', [UserController::class, 'updateStatus'])->name('admin.users.status.update');
+
+        // Membership Plans Routes
+        Route::get('/membership-plans', [MembershipPlanController::class, 'index'])->name('admin.membership-plans.index');
+        Route::get('/membership-plans/create', [MembershipPlanController::class, 'create'])->name('admin.membership-plans.create');
+        Route::post('/membership-plans', [MembershipPlanController::class, 'store'])->name('admin.membership-plans.store');
+        Route::get('/membership-plans/{membershipPlan}', [MembershipPlanController::class, 'show'])->name('admin.membership-plans.show');
+        Route::get('/membership-plans/{membershipPlan}/edit', [MembershipPlanController::class, 'edit'])->name('admin.membership-plans.edit');
+        Route::put('/membership-plans/{membershipPlan}', [MembershipPlanController::class, 'update'])->name('admin.membership-plans.update');
+        Route::delete('/membership-plans/{membershipPlan}', [MembershipPlanController::class, 'destroy'])->name('admin.membership-plans.destroy');
+
+        // Agents Routes
+        Route::get('/agents', [AgentController::class, 'index'])->name('admin.agents.index');
+        Route::get('/agents/create', [AgentController::class, 'create'])->name('admin.agents.create');
+        Route::post('/agents', [AgentController::class, 'store'])->name('admin.agents.store');
+        Route::get('/agents/{agent}', [AgentController::class, 'show'])->name('admin.agents.show');
+        Route::get('/agents/{agent}/edit', [AgentController::class, 'edit'])->name('admin.agents.edit');
+        Route::put('/agents/{agent}', [AgentController::class, 'update'])->name('admin.agents.update');
+        Route::delete('/agents/{agent}', [AgentController::class, 'destroy'])->name('admin.agents.destroy');
     });
 });
 
