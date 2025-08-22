@@ -70,8 +70,6 @@ Route::get('/check-update', function (Request $request) {
         ]);
     }
 });
-
-
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register/step1', [AuthController::class, 'step1']);
 

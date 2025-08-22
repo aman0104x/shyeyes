@@ -26,6 +26,7 @@ class User extends Authenticatable
         'password',
         'dob',
         'img',
+        'cover_photo',
         'age',
         'gender',
         'location',

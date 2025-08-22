@@ -25,10 +25,16 @@ class ProfileController extends Controller
             ], 401);
         }
 
-        // Build full image URL with proper file existence check
+        // Profile Image URL
         $imageUrl = null;
         if ($user->img && file_exists(public_path($user->img))) {
             $imageUrl = asset($user->img);
+        }
+
+        // Cover Photo URL
+        $coverPhotoUrl = null;
+        if ($user->cover_photo && file_exists(public_path($user->cover_photo))) {
+            $coverPhotoUrl = asset($user->cover_photo);
         }
 
         return response()->json([
@@ -49,11 +55,13 @@ class ProfileController extends Controller
                 'about' => $user->about,
                 'status' => $user->status,
                 'image_url' => $imageUrl,
+                'cover_photo_url' => $coverPhotoUrl, // 👈 Added this
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at
             ]
         ], 200);
     }
+
 
     /**
      * Get all unblocked users with basic profile information
@@ -229,15 +237,25 @@ class ProfileController extends Controller
             'location' => 'sometimes|string|max:255',
             'about' => 'sometimes|string|max:1000',
             'img' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover_photo' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Handle image upload if provided
+        // Handle profile image upload if provided
         if ($request->hasFile('img')) {
             $image = $request->file('img');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $imageName = time() . '_profile.' . $image->getClientOriginalExtension();
             $imagePath = 'uploads/users/' . $imageName;
             $image->move(public_path('uploads/users'), $imageName);
             $validatedData['img'] = $imagePath;
+        }
+
+        // Handle cover photo upload if provided
+        if ($request->hasFile('cover_photo')) {
+            $coverPhoto = $request->file('cover_photo');
+            $coverPhotoName = time() . '_cover.' . $coverPhoto->getClientOriginalExtension();
+            $coverPhotoPath = 'uploads/users/' . $coverPhotoName;
+            $coverPhoto->move(public_path('uploads/users'), $coverPhotoName);
+            $validatedData['cover_photo'] = $coverPhotoPath;
         }
 
         // Update user profile
@@ -247,6 +265,12 @@ class ProfileController extends Controller
         $imageUrl = null;
         if ($user->img && file_exists(public_path($user->img))) {
             $imageUrl = asset($user->img);
+        }
+
+        // Build full cover photo URL with proper file existence check
+        $coverPhotoUrl = null;
+        if ($user->cover_photo && file_exists(public_path($user->cover_photo))) {
+            $coverPhotoUrl = asset($user->cover_photo);
         }
 
         return response()->json([
@@ -267,6 +291,7 @@ class ProfileController extends Controller
                 'about' => $user->about,
                 'status' => $user->status,
                 'image_url' => $imageUrl,
+                'cover_photo_url' => $coverPhotoUrl, // 👈 Added here
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at
             ]
