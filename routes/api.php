@@ -100,4 +100,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/{userId}/liked-by', [LikeController::class, 'getLikedBy']);
     Route::get('/users/{userId}/likes', [LikeController::class, 'getLikes']);
     Route::delete('/users/{userId}/unlike', [LikeController::class, 'unlikeUser']);
+
+    // User Images Routes
+    Route::post('/images/upload', [ProfileController::class, 'uploadImages']);
+    Route::get('/images', [ProfileController::class, 'getUserImages']);
+    Route::delete('/images/{imageId}', [ProfileController::class, 'deleteImage']);
 });

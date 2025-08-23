@@ -114,4 +114,12 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(User::class, 'user_likes', 'liked_id', 'liker_id');
     }
+
+    /**
+     * Get all images for this user
+     */
+    public function images()
+    {
+        return $this->hasMany(UserImage::class);
+    }
 }

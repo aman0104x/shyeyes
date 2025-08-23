@@ -12,7 +12,7 @@ class MessageRequestController extends Controller
     // Send message request
     public function sendRequest(Request $request)
     {
-        $request->validate([
+        $request->validator([
             'receiver_id' => 'required|exists:users,id',
         ]);
 
@@ -22,10 +22,10 @@ class MessageRequestController extends Controller
         // Check if request already exists
         $existingRequest = MessageRequest::where(function ($query) use ($senderId, $receiverId) {
             $query->where('sender_id', $senderId)
-                  ->where('receiver_id', $receiverId);
+                ->where('receiver_id', $receiverId);
         })->orWhere(function ($query) use ($senderId, $receiverId) {
             $query->where('sender_id', $receiverId)
-                  ->where('receiver_id', $senderId);
+                ->where('receiver_id', $senderId);
         })->first();
 
         if ($existingRequest) {
@@ -38,10 +38,10 @@ class MessageRequestController extends Controller
         // Check if they already have messages (existing conversation)
         $existingMessages = Message::where(function ($query) use ($senderId, $receiverId) {
             $query->where('sender_id', $senderId)
-                  ->where('receiver_id', $receiverId);
+                ->where('receiver_id', $receiverId);
         })->orWhere(function ($query) use ($senderId, $receiverId) {
             $query->where('sender_id', $receiverId)
-                  ->where('receiver_id', $senderId);
+                ->where('receiver_id', $senderId);
         })->exists();
 
         if ($existingMessages) {
@@ -63,7 +63,7 @@ class MessageRequestController extends Controller
         return response()->json([
             'message' => $existingMessages ? 'Request auto-accepted due to existing conversation' : 'Message request sent successfully',
             'request' => $messageRequest
-        ]);
+        ], 200);
     }
 
     // Accept message request
@@ -137,34 +137,33 @@ class MessageRequestController extends Controller
         // Check if request exists and is accepted
         $request = MessageRequest::where(function ($query) use ($currentUserId, $userId) {
             $query->where('sender_id', $currentUserId)
-                  ->where('receiver_id', $userId);
+                ->where('receiver_id', $userId);
         })->orWhere(function ($query) use ($currentUserId, $userId) {
             $query->where('sender_id', $userId)
-                  ->where('receiver_id', $currentUserId);
+                ->where('receiver_id', $currentUserId);
         })->where('status', 'accepted')->exists();
 
         return response()->json(['can_message' => $request]);
     }
 
     // Get accepted users (friends / allowed chat users)
-public function getAcceptedUsers()
-{
-    $userId = auth()->id();
+    public function getAcceptedUsers()
+    {
+        $userId = auth()->id();
 
-    $requests = MessageRequest::with(['sender', 'receiver'])
-        ->where(function ($query) use ($userId) {
-            $query->where('sender_id', $userId)
-                  ->orWhere('receiver_id', $userId);
-        })
-        ->where('status', 'accepted')
-        ->get();
+        $requests = MessageRequest::with(['sender', 'receiver'])
+            ->where(function ($query) use ($userId) {
+                $query->where('sender_id', $userId)
+                    ->orWhere('receiver_id', $userId);
+            })
+            ->where('status', 'accepted')
+            ->get();
 
-    // Format so we only return the "other" user
-    $acceptedUsers = $requests->map(function ($request) use ($userId) {
-        return $request->sender_id === $userId ? $request->receiver : $request->sender;
-    });
+        // Format so we only return the "other" user
+        $acceptedUsers = $requests->map(function ($request) use ($userId) {
+            return $request->sender_id === $userId ? $request->receiver : $request->sender;
+        });
 
-    return response()->json($acceptedUsers);
-}
-
+        return response()->json($acceptedUsers);
+    }
 }
