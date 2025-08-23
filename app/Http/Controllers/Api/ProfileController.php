@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserImage;
 
 class ProfileController extends Controller
 {
@@ -295,6 +296,135 @@ class ProfileController extends Controller
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at
             ]
+        ], 200);
+    }
+
+    /**
+     * Upload multiple images for user
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function uploadImages(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        // Validate the request data
+        $request->validate([
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $uploadedImages = [];
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $imagePath = 'uploads/users/' . $imageName;
+                $image->move(public_path('uploads/users'), $imageName);
+
+                // Save image record to database
+                $userImage = UserImage::create([
+                    'user_id' => $user->id,
+                    'image_path' => $imagePath
+                ]);
+
+                $uploadedImages[] = [
+                    'id' => $userImage->id,
+                    'image_url' => asset($imagePath)
+                ];
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Images uploaded successfully',
+            'data' => $uploadedImages
+        ], 200);
+    }
+
+    /**
+     * Get all images for authenticated user
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUserImages(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $images = $user->images->map(function ($image) {
+            $imageUrl = null;
+            if ($image->image_path && file_exists(public_path($image->image_path))) {
+                $imageUrl = asset($image->image_path);
+            }
+            return [
+                'id' => $image->id,
+                'image_url' => $imageUrl,
+                'created_at' => $image->created_at
+            ];
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User images retrieved successfully',
+            'data' => $images
+        ], 200);
+    }
+
+    /**
+     * Delete a user image
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $imageId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteImage(Request $request, $imageId)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $image = UserImage::where('id', $imageId)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$image) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Image not found or unauthorized'
+            ], 404);
+        }
+
+        // Delete the physical file
+        if ($image->image_path && file_exists(public_path($image->image_path))) {
+            unlink(public_path($image->image_path));
+        }
+
+        // Delete the database record
+        $image->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Image deleted successfully'
         ], 200);
     }
 }

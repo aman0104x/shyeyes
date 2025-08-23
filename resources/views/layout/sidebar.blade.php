@@ -4,13 +4,13 @@
 		<img src="{{ asset("images/shylogo1.png") }}" alt="Logo">
 	</div>
 	<ul class="dating-sidebar-menu">
-		<li><a href="{{ route("admin.dashboard") }}" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-		<li><a href="{{ route("admin.users.index") }}"><i class="fas fa-users"></i> User Management</a></li>
-		<li><a href="{{ route("admin.agents.index") }}"><i class="fas fa-user-tie"></i> Agent Management</a></li>
-		<li><a href=#><i class="fas fa-comments"></i> Chats Monitoring</a></li>
-		<li><a href="{{ route("reports.index") }}"><i class="fas fa-chart-line"></i> Reports</a></li>
-		<li><a href=#><i class="fas fa-credit-card"></i> Payments</a></li>
-		<li><a href="{{ route("admin.membership-plans.index") }}"><i class="fas fa-crown"></i> Membership Plans</a></li>
+		<li><a href="{{ route("admin.dashboard") }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><i class="fas fa-home"></i> Dashboard</a></li>
+		<li><a href="{{ route("admin.users.index") }}" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}"><i class="fas fa-users"></i> User Management</a></li>
+		<li><a href="{{ route("admin.agents.index") }}" class="{{ request()->routeIs('admin.agents.*') ? 'active' : '' }}"><i class="fas fa-user-tie"></i> Agent Managem..</a></li>
+		<li><a href="#" class="{{ request()->routeIs('admin.chats.*') ? 'active' : '' }}"><i class="fas fa-comments"></i> Chats Monitoring</a></li>
+		<li><a href="{{ route("reports.index") }}" class="{{ request()->routeIs('reports.*') ? 'active' : '' }}"><i class="fas fa-chart-line"></i> Reports</a></li>
+		<li><a href="#" class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}"><i class="fas fa-credit-card"></i> Payments</a></li>
+		<li><a href="{{ route("admin.membership-plans.index") }}" class="{{ request()->routeIs('admin.membership-plans.*') ? 'active' : '' }}"><i class="fas fa-crown"></i> Membership Pl..</a></li>
 		{{-- development --}}
 		<li>
 			<a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
