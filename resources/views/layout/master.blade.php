@@ -25,52 +25,30 @@
 
 	<style>
 		/* Dating Sidebar Container */
-		/* .dating-sidebar-container {
-			width: 250px;
-			height: 100vh;
-			background: linear-gradient(135deg, #eb6db4cf, #df3894);
-			color: white;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			padding: 24px 20px 40px;
-			position: fixed;
-			left: 0;
-			top: 0;
-			box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
-			border-radius: 0 20px 20px 0;
-			z-index: 100;
-			transition: transform 0.3s ease;
-			overflow-y: auto;
-		} */
 		.dating-sidebar-container {
-			width: 250px;
-			height: 100vh;
-			background: linear-gradient(135deg, #eb6db4cf, #df3894);
-			color: white;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			padding: 24px 20px 40px;
-			position: fixed;
-			left: 0;
-			top: 0;
-			box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
-			border-radius: 0 20px 20px 0;
-			z-index: 100;
-			transition: transform 0.3s ease;
-			overflow-y: auto;
-			/* 👇 Add these for invisible scrollbar */
-			scrollbar-width: none;
-			/* Firefox */
-			-ms-overflow-style: none;
-			/* IE/Edge */
-		}
+    width: 250px;
+    height: 100vh;
+    background: linear-gradient(135deg, #eb6db4cf, #df3894);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 20px 40px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+    border-radius: 0 20px 20px 0;
+    z-index: 100;
+    transition: transform 0.3s ease;
+    overflow-y: scroll; /* Enable scroll */
+    scrollbar-width: none; /* For Firefox to hide scrollbar */
+}
 
-		.dating-sidebar-container::-webkit-scrollbar {
-			display: none;
-			/* Chrome, Safari, Opera */
-		}
+.dating-sidebar-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Webkit browsers (Chrome, Safari, etc.) */
+}
+
 
 		/* Logo */
 		.dating-sidebar-logo {
@@ -178,8 +156,7 @@
 			background: #df3894;
 			color: white;
 			border: none;
-			display: none;
-			/* Hidden by default */
+			display: none; /* Hidden by default */
 			align-items: center;
 			justify-content: center;
 			font-size: 18px;
@@ -209,10 +186,8 @@
 			.dating-sidebar-container {
 				transform: translateX(-100%);
 				width: 240px;
-				overflow-y: auto;
-				/* Enable vertical scrolling */
-				-webkit-overflow-scrolling: touch;
-				/* Smooth scrolling on iOS */
+				overflow-y: auto; /* Enable vertical scrolling */
+				-webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 			}
 
 			.dating-sidebar-container.sidebar-open {
@@ -222,8 +197,7 @@
 			.sidebar-toggle-btn {
 				left: 20px;
 				top: 20px;
-				display: flex;
-				/* Show toggle button on mobile */
+				display: flex; /* Show toggle button on mobile */
 				opacity: 1;
 				visibility: visible;
 			}

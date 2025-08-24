@@ -9,7 +9,9 @@
 		<li><a href="{{ route("admin.agents.index") }}" class="{{ request()->routeIs('admin.agents.*') ? 'active' : '' }}"><i class="fas fa-user-tie"></i> Agent Managem..</a></li>
 		<li><a href="#" class="{{ request()->routeIs('admin.chats.*') ? 'active' : '' }}"><i class="fas fa-comments"></i> Chats Monitoring</a></li>
 		<li><a href="{{ route("reports.index") }}" class="{{ request()->routeIs('reports.*') ? 'active' : '' }}"><i class="fas fa-chart-line"></i> Reports</a></li>
-		<li><a href="#" class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}"><i class="fas fa-credit-card"></i> Payments</a></li>
+		<li><a href="{{ route("admin.payment-settings.view") }}" class="{{ request()->routeIs('admin.payment-settings.*') ? 'active' : '' }}"><i class="fas fa-credit-card"></i> Account Info</a></li>
+		<li><a href="{{ route("admin.transactions.index") }}" class="{{ request()->routeIs('admin.transactions.*') ? 'active' : '' }}"><i class="fas fa-money-bill-wave"></i> Transactions</a></li>
+
 		<li><a href="{{ route("admin.membership-plans.index") }}" class="{{ request()->routeIs('admin.membership-plans.*') ? 'active' : '' }}"><i class="fas fa-crown"></i> Membership Pl..</a></li>
 		{{-- development --}}
 		<li>

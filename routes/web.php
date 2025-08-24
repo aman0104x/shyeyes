@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller\Admin\MembershipPlanController;
 use App\Http\Controllers\Controller\Admin\ReportController;
 use App\Http\Controllers\Controller\Admin\UserController;
 use App\Http\Controllers\Controller\Admin\AgentController;
+use App\Http\Controllers\PaymentSettingController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DownloadController;
 use Illuminate\Support\Facades\Route;
 
@@ -68,6 +70,14 @@ Route::prefix('admin')->group(function () {
         Route::get('/agents/{agent}/edit', [AgentController::class, 'edit'])->name('admin.agents.edit');
         Route::put('/agents/{agent}', [AgentController::class, 'update'])->name('admin.agents.update');
         Route::delete('/agents/{agent}', [AgentController::class, 'destroy'])->name('admin.agents.destroy');
+
+        // Payment Settings Routes
+        Route::get('/payment-settings', [PaymentSettingController::class, 'index'])->name('admin.payment-settings.index');
+        Route::get('/payment-settings/view', [PaymentSettingController::class, 'show'])->name('admin.payment-settings.view');
+        Route::post('/payment-settings', [PaymentSettingController::class, 'update'])->name('admin.payment-settings.update');
+
+        // Transactions Routes
+        Route::resource('/transactions', TransactionController::class)->names('admin.transactions');
     });
 });
 
