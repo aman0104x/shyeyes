@@ -9,9 +9,7 @@ use App\Models\MembershipPlan;
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of the transactions.
-     */
+    
     public function index()
     {
         $transactions = Transaction::with(['user', 'membershipPlan'])
